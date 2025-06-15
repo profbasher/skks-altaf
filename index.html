@@ -2,6 +2,7 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Savings Manager</title>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
   * {
     box-sizing: border-box;
@@ -208,7 +209,24 @@
 
 </head>
 <body>
+  <div id="loginBox" style="max-width:400px;margin:100px auto;padding:20px;border:1px solid #ccc;border-radius:8px;background:#fff;box-shadow:0 0 10px rgba(0,0,0,0.1);">
+  <h2 style="text-align:center;margin-bottom:1rem;">Login</h2>
+  <input type="text" id="username" placeholder="Username" style="width:100%;margin-bottom:1rem;padding:0.5rem;border:1px solid #ccc;border-radius:4px;" />
+  <input type="password" id="password" placeholder="Password" style="width:100%;margin-bottom:1rem;padding:0.5rem;border:1px solid #ccc;border-radius:4px;" />
+  <button onclick="login()" style="width:100%;padding:0.6rem;background:#2ecc71;color:#fff;border:none;border-radius:4px;cursor:pointer;">Login</button>
+  <p id="loginMessage" style="color:red;text-align:center;margin-top:0.5rem;"></p>
+</div>
+
+<div id="mainContent" style="display:none;">
+  <!-- your original page content here (starting from <header>...) -->
+
 <header>💰 Savings Manager</header>
+
+<!-- <button onclick="logout()">Logout</button> -->
+ <button id="logoutBtn" onclick="logout()" class="fixed top-4 right-4 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
+  Logout
+</button>
+
 <div class="container">
   <h2>Add / Edit Entry</h2>
   <form id="entryForm">
@@ -274,11 +292,21 @@
   </table>
 </div>
 
+
   
+</div>
 </div>
 
 <script>
-const url = "https://script.google.com/macros/s/AKfycbzV4gftdFhWVTNQ3WDzFfT4ZyGYO_EM2-W49NvF8HHpmUh4Snh-h5xZKez1TQCFqKAp/exec";
+  /*window.onload = function () {
+  if (localStorage.getItem('loggedIn') === 'true') {
+    showDashboard();  // Show the dashboard or main app
+  } else {
+    showLogin();  // Show the login form
+  }
+};*/
+
+const url = "https://script.google.com/macros/s/AKfycbywodJ_8zeEF-G-Z1qRHuS7woR5c3yfSh9vnbG0LX1Rb9he4J0xhtTIEjCCu2CFSGkg/exec";
 let dataList = [];
 const form = document.getElementById("entryForm");
 const tbody = document.querySelector("tbody");
@@ -442,10 +470,118 @@ clearBtn.addEventListener("click", () => {
   render(dataList);
 });
 
+const loginScriptURL = "https://script.google.com/macros/s/AKfycbws88Q59ZxGC8sBrWc9C5aS3J5wXTmSMJluVlYbjqYQJhJq36GU4EBdQ4yGAf_SLUr6/exec";
+
+/*function login() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const msg = document.getElementById("loginMessage");
+
+  if (!username || !password) {
+    msg.textContent = "Username and password required.";
+    return;
+  }
+
+  const data = new URLSearchParams();
+  data.append("username", username);
+  data.append("password", password);
+
+  fetch(loginScriptURL, {
+    method: "POST",
+    body: data
+  })
+    .then(res => res.json())
+    .then(response => {
+      if (response.success) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+        load(); // optional: load data after login
+      } else {
+        msg.textContent = "Invalid username or password.";
+      }
+    })
+    .catch(() => {
+      msg.textContent = "Login failed. Try again.";
+    });
+}*/
 
 
+
+
+
+
+
+
+
+
+
+  
+ 
+
+  
 search.addEventListener("input",()=>render(dataList));
 window.addEventListener("load",load);
+
+
+
+
+
+
+
+
+
+
+  // Show appropriate screen on page load
+window.onload = function() {
+  if (localStorage.getItem('loggedIn') === 'true') {
+    showDashboard();
+  } else {
+    showLogin();
+  }
+}
+
+// Login logic
+function login() {
+  const u = document.getElementById("username").value.trim();
+  const p = document.getElementById("password").value.trim();
+  const msg = document.getElementById("loginMessage");
+
+  fetch(loginScriptURL, {
+    method: "POST",
+    body: new URLSearchParams({username: u, password: p})
+  })
+    .then(res => res.json())
+    .then(resp => {
+      if (resp.success) {
+        localStorage.setItem("loggedIn", "true");
+        showDashboard();
+      } else {
+        msg.textContent = "Invalid username or password.";
+      }
+    })
+    .catch(() => msg.textContent = "Login failed. Try again.");
+}
+
+// Logout logic
+function logout() {
+  localStorage.removeItem("loggedIn");
+  showLogin();
+}
+
+// Show login screen
+function showLogin() {
+  document.getElementById("loginBox").style.display = "block";
+  document.getElementById("mainContent").style.display = "none";
+}
+
+// Show dashboard screen & load data
+function showDashboard() {
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("mainContent").style.display = "block";
+  load();
+}
+
+
 </script>
 </body>
 </html>
